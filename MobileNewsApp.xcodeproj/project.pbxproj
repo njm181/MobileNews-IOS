@@ -52,7 +52,6 @@
 		9E45108F2B75A7F800C63DE4 = {
 			isa = PBXGroup;
 			children = (
-				9E6D24662B7E45B200347872 /* Config.plist */,
 				9E45109A2B75A7F800C63DE4 /* MobileNewsApp */,
 				9E4510992B75A7F800C63DE4 /* Products */,
 			);
@@ -69,6 +68,7 @@
 		9E45109A2B75A7F800C63DE4 /* MobileNewsApp */ = {
 			isa = PBXGroup;
 			children = (
+				9E6D24662B7E45B200347872 /* Config.plist */,
 				9E45A8742B7D43D7009F25CD /* data */,
 				9E45A8752B7D43DD009F25CD /* domain */,
 				9E45A8762B7D43E1009F25CD /* presentation */,
