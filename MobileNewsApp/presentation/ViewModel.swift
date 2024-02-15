@@ -8,7 +8,6 @@
 import Foundation
 
 final class ViewModel {
-    
     private let repository: NewsRepository = NewsRepositoryImpl()
     
     func executeApi() async{
