@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+protocol NewsRepository {
+    func getNewsFromService() async -> [Article]
+}

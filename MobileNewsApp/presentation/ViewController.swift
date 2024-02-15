@@ -15,7 +15,10 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .red
-        viewModel.executeApi()
+        
+        Task {
+            await viewModel.executeApi()
+        }
     }
 
 
