@@ -68,7 +68,6 @@
 		9E45109A2B75A7F800C63DE4 /* MobileNewsApp */ = {
 			isa = PBXGroup;
 			children = (
-				9E6D24662B7E45B200347872 /* Config.plist */,
 				9E45A8742B7D43D7009F25CD /* data */,
 				9E45A8752B7D43DD009F25CD /* domain */,
 				9E45A8762B7D43E1009F25CD /* presentation */,
@@ -77,6 +76,7 @@
 				9E4510A42B75A7F900C63DE4 /* Assets.xcassets */,
 				9E4510A62B75A7F900C63DE4 /* LaunchScreen.storyboard */,
 				9E4510A92B75A7F900C63DE4 /* Info.plist */,
+				9E6D24662B7E45B200347872 /* Config.plist */,
 			);
 			path = MobileNewsApp;
 			sourceTree = "<group>";
