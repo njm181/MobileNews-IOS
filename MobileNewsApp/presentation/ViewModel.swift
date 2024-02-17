@@ -7,10 +7,13 @@
 
 import Foundation
 
-final class ViewModel {
+final class ViewModel: ObservableObject {
+    
+    @Published var newsArticleList: [Article] = []
+    
     private let repository: NewsRepository = NewsRepositoryImpl()
     
-    func executeApi() async{
-        await repository.getNewsFromService()
+    func getNews() async{
+        self.newsArticleList = await repository.getNewsFromService()
     }
 }
