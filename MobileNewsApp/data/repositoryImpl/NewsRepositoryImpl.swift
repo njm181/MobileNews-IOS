@@ -12,10 +12,11 @@ class NewsRepositoryImpl: NewsRepository {
     private let newsRemoteService = NewsRemoteService()
     
     
-    func getNewsFromService() async -> [Article] {
+    func getNewsFromService() async -> MobileNewsDomain {
         let news = await newsRemoteService.getNews()
-        print("News ---> \(Array(news.articles.prefix(5)).count)")
-        return Array(news.articles.prefix(5))
+        news.articles = Array(news.articles.prefix(5))
+        print("News FORMATTED---> \(news.articles.count)")
+        return news
     }
     
     

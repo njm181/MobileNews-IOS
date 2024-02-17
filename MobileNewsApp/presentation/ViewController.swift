@@ -10,167 +10,98 @@ import Combine
 
 class ViewController: UIViewController {
     
-    private lazy var smallCardContainer: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .brown
-        
-        view.widthAnchor.constraint(equalToConstant: 130).isActive = true
-        view.heightAnchor.constraint(equalToConstant: 70).isActive = true
-        
-        return view
-    }()
-    
-    private lazy var smallTitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 12)
-        label.textAlignment = .left
-        label.textColor = .black
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Section Name"
-        
-        return label
-    }()
-    
-    private lazy var smallDescriptionLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 10)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .left
-        label.text = "Description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description"
-        label.numberOfLines = 2
-        return label
-    }()
-    
-    //=============
-    
-    private lazy var largeCardContainer: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .brown
-        
-        view.widthAnchor.constraint(equalToConstant: 250).isActive = true
-        view.heightAnchor.constraint(equalToConstant: 260).isActive = true
-        
-        return view
-    }()
-    
-    private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 14)
-        label.textAlignment = .center
-        label.textColor = .black
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Section Name"
-        
-        return label
-    }()
-    
-    private lazy var imageNews: UIImageView = {
-        let iv = UIImageView()
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.contentMode = .scaleAspectFit
-        iv.clipsToBounds = true
-        iv.heightAnchor.constraint(equalToConstant: 150).isActive = true
-        iv.backgroundColor = .black
-        
-        return iv
-    }()
-    
-    private lazy var descriptionLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .left
-        label.text = "Description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description description"
-        label.numberOfLines = 2
-        return label
-    }()
-    
-    
+    let tableView = UITableView()
+    private var dataSource: MainTableViewDataSource?
+    private var delegate: MainTableViewDelegate?
     
     private var viewModel: ViewModel = ViewModel()
     private var cancellables = Set<AnyCancellable>()
-    private var largeCard = LargeCard()
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .red
-        //view.addSubview(stackView)
-        
-        configureUI()
-//        viewModel.$newsArticleList
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] articleList in
-//                print("FROM CONTROLLER ==> \(articleList)")
-//            }
-//            .store(in: &cancellables)
-//        
-//        Task {
-//            await viewModel.getNews()
-//        }
+    private var articles: [Article] = []
+    private var articlesBIS: [Article] = []
+    
+    private var resultNews: [Article] = []
+    private var resultNewYorkTimes: [ResultNewYorkTimes] = []
+    private var resultTheGuardian: [ResultTheGuardian] = []
+    
+    
+    // Configurar la barra de progreso
+    var progressView: UIActivityIndicatorView = {
+        var progress = UIActivityIndicatorView(style: .large)
+        progress.translatesAutoresizingMaskIntoConstraints = false
+        return progress
+    }()
+            
+
+    override func loadView() {
+        self.dataSource = MainTableViewDataSource(dataSource: resultNews)
+        self.delegate = MainTableViewDelegate(viewModel: viewModel)
+        tableView.dataSource = dataSource
+        tableView.delegate = delegate
+        tableView.register(SmallCell.self, forCellReuseIdentifier: "SmallCell")
+        view = tableView
     }
-
-    private func configureUI() {
-        view.backgroundColor = .white
-        
-        view.addSubview(largeCardContainer)
-        largeCardContainer.addSubview(titleLabel)
-        largeCardContainer.addSubview(imageNews)
-        largeCardContainer.addSubview(descriptionLabel)
-
+    
+    override func viewDidLoad() {
+        view.addSubview(progressView)
         NSLayoutConstraint.activate([
-            largeCardContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            largeCardContainer.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor)
-        ])
+           progressView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+           progressView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+       ])
         
-        NSLayoutConstraint.activate([
-            titleLabel.centerXAnchor.constraint(equalTo: largeCardContainer.centerXAnchor),
-            titleLabel.topAnchor.constraint(equalTo: largeCardContainer.topAnchor, constant: 16)
-        ])
+        // Iniciar el temporizador para ocultar la barra de progreso después de 3 segundos
+        viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] loading in
+                if loading == true{
+                    self?.progressView.isHidden = false
+                    self?.progressView.startAnimating()
+                } else {
+                    self?.progressView.isHidden = true
+                    self?.progressView.stopAnimating()
+                }
+            }
+            .store(in: &cancellables)
         
+        
+        Task {
+            await viewModel.getNews()
+        }
+        getTheGuardian()
+        getNewYorkTimes()
+        getNews()
+    }
+    
+    
+    private func getTheGuardian(){
+        viewModel.$resultTheGuardianArticlesList
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] theGuardian in
+                self?.resultTheGuardian = theGuardian
                 
-        NSLayoutConstraint.activate([
-            imageNews.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            imageNews.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
-            imageNews.leadingAnchor.constraint(equalTo: largeCardContainer.leadingAnchor, constant: 16),
-            imageNews.trailingAnchor.constraint(equalTo: largeCardContainer.trailingAnchor, constant: -16),
-            
-        ])
-        
-        NSLayoutConstraint.activate([
-            descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            descriptionLabel.topAnchor.constraint(equalTo: imageNews.bottomAnchor, constant: 16),
-            descriptionLabel.leadingAnchor.constraint(equalTo: largeCardContainer.leadingAnchor, constant: 16),
-            descriptionLabel.trailingAnchor.constraint(equalTo: largeCardContainer.trailingAnchor, constant: -16),
-            
-        ])
-        //======
-        
-        view.addSubview(smallCardContainer)
-        smallCardContainer.addSubview(smallTitleLabel)
-        smallCardContainer.addSubview(smallDescriptionLabel)
-        
-        NSLayoutConstraint.activate([
-            smallCardContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            smallCardContainer.topAnchor.constraint(equalTo: largeCardContainer.bottomAnchor, constant: 48)
-        ])
-        
-        NSLayoutConstraint.activate([
-            //smallTitleLabel.centerXAnchor.constraint(equalTo: smallCardContainer.centerXAnchor),
-            smallTitleLabel.topAnchor.constraint(equalTo: smallCardContainer.topAnchor, constant: 8),
-            smallTitleLabel.leadingAnchor.constraint(equalTo: smallCardContainer.leadingAnchor, constant: 8),
-            smallTitleLabel.trailingAnchor.constraint(equalTo: smallCardContainer.trailingAnchor, constant: -8),
-        ])
-        
-        NSLayoutConstraint.activate([
-            //smallDescriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            smallDescriptionLabel.topAnchor.constraint(equalTo: smallTitleLabel.bottomAnchor, constant: 8),
-            smallDescriptionLabel.leadingAnchor.constraint(equalTo: smallCardContainer.leadingAnchor, constant: 8),
-            smallDescriptionLabel.trailingAnchor.constraint(equalTo: smallCardContainer.trailingAnchor, constant: -8),
-        ])
-
+                print("FROM CONTROLLER 1==> \(String(describing: self?.resultTheGuardian.first))")
+            }
+            .store(in: &cancellables)
+    }
+    private func getNewYorkTimes(){
+        viewModel.$resultNewYorkTimesArticlesList
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newYorkTimes in
+                self?.resultNewYorkTimes = newYorkTimes
+                
+                print("FROM CONTROLLER 2==> \(String(describing: self?.resultNewYorkTimes.first))")
+            }
+            .store(in: &cancellables)
+    }
+    private func getNews(){
+        viewModel.$resultNewsArticlesList
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] news in
+                self?.resultNews = news
+                
+                print("FROM CONTROLLER 3==> \(String(describing: self?.resultNews.first))")
+            }
+            .store(in: &cancellables)
     }
 
 }
-

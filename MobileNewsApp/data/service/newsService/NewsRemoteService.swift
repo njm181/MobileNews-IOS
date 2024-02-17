@@ -26,4 +26,5 @@ struct NewsRemoteService {
         }
         return key
     }
+    
 }

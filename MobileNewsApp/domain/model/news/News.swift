@@ -8,10 +8,12 @@
 import Foundation
 
 
-struct News: Codable {
-    let status: String
-    let articles: [Article]
+class News: MobileNewsDomain, Codable {
+    var articles: [Article] = []
     
+    override var newsType: NewsType {
+        return .NEWS
+    }
 }
 
 
