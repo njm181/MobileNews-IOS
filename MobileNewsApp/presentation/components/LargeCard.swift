@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-final class LargeCard: UIView {
+final class LargeCard: UITableViewCell {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -19,20 +19,8 @@ final class LargeCard: UIView {
         return label
     }()
     
-    private lazy var stackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [titleLabel])
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.backgroundColor = .green
-        stackView.axis = .vertical
-        stackView.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        stackView.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        addSubview(stackView)
-        
-        return stackView
-    }()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         setupView()
     }
@@ -42,14 +30,19 @@ final class LargeCard: UIView {
     }
     
     private func setupView(){
-        addSubview(stackView)
-//        NSLayoutConstraint.activate([
-//            stackView.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor),
-//            stackView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor),
-////            stackView.widthAnchor.constraint(equalToConstant: 250),
-////            stackView.heightAnchor.constraint(equalToConstant: 260)
-//        ])
-
-        
+        addSubview(titleLabel)
+        NSLayoutConstraint.activate([
+            //constraints for image
+//            smallTitleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
+//            smallTitleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 12),
+//            smallTitleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12),
+            
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
+            titleLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
+        ])
+    }
+    
+    func configure(model: Article) {
+        titleLabel.text = model.title
     }
 }

@@ -18,13 +18,13 @@ final class ViewModel: ObservableObject {
     private let newYorkTimesRepository: NewsRepository = NewYorkTimesRepositoryImpl()
     private let theGuardianRepository: NewsRepository = TheGuardianRepositoryImpl()
     
-    func getNews() async {
-        let news = await newsRepository.getNewsFromService() as! News
-        let newYorkTimes = await newYorkTimesRepository.getNewsFromService() as! NewYorkTimes
+    func getAllNews() async {
+        //let news = await newsRepository.getNewsFromService() as! News
+        //let newYorkTimes = await newYorkTimesRepository.getNewsFromService() as! NewYorkTimes
         let theGuardian = await theGuardianRepository.getNewsFromService() as! TheGuardian
         
-        self.resultNewsArticlesList = news.articles
-        self.resultNewYorkTimesArticlesList = newYorkTimes.results
+        //self.resultNewsArticlesList = news.articles
+        //self.resultNewYorkTimesArticlesList = newYorkTimes.results
         self.resultTheGuardianArticlesList = theGuardian.response.results
         isLoading = false
     }

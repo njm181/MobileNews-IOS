@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-final class MainTableViewDelegate: NSObject, UITableViewDelegate {
+final class MainCollectionViewDelegate: NSObject, UICollectionViewDelegate {
     
     private var viewModel: ViewModel
     
@@ -16,9 +16,9 @@ final class MainTableViewDelegate: NSObject, UITableViewDelegate {
         self.viewModel = viewModel
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let model = viewModel.resultNewsArticlesList[indexPath.row]
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let model = viewModel.resultNewsArticlesList[indexPath.item]
+        //click
         print("CELL ==>> \(model)")
     }
-    
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ResultTheGuardian: Codable {
+struct ResultTheGuardian: Codable {
     var sectionName: String = ""
     var webTitle: String = ""
     var webUrl: String = ""

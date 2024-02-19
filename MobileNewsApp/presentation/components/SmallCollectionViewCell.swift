@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SmallCell: UITableViewCell {
+class SmallCollectionViewCell: UICollectionViewCell {
     
     private lazy var smallTitleLabel: UILabel = {
         let label = UILabel()
@@ -16,31 +16,30 @@ class SmallCell: UITableViewCell {
         label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Section Name"
-
+        label.backgroundColor = .red
         return label
     }()
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        addSubview(smallTitleLabel)
-        
-        NSLayoutConstraint.activate([
-            //constraints for image
-//            smallTitleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
-//            smallTitleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 12),
-//            smallTitleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12),
-            
-            smallTitleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
-            smallTitleLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
-        ])
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupSubviews()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    private func setupSubviews() {
+        addSubview(smallTitleLabel)
+        
+        NSLayoutConstraint.activate([
+            smallTitleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
+            smallTitleLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
+        ])
+    }
 
-    func configure(model: Article) {
-        smallTitleLabel.text = model.title
+    func configure(model: ResultTheGuardian) {
+    //func configure(model: String) {
+        smallTitleLabel.text = model.sectionName
     }
 }
