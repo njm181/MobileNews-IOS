@@ -11,10 +11,19 @@ struct TheGuardianRemoteService {
     
     func getNews() async -> TheGuardian {
         var request = URLRequest(url: URL(string: "https://content.guardianapis.com/search?q=economy")!)
-        request.addValue("9b7bec85-cd8c-4543-a31d-6aa226d1eda7", forHTTPHeaderField: "api-key")
+        request.addValue(guardianServiceAuth(), forHTTPHeaderField: "api-key")
         
         let (data, _) = try! await URLSession.shared.data(for: request)
         let newsModel = try! JSONDecoder().decode(TheGuardian.self, from: data)
         return newsModel
+    }
+    
+    private func guardianServiceAuth() -> String{
+        guard let configPath = Bundle.main.path(forResource: "Config", ofType: "plist"),
+              let config = NSDictionary(contentsOfFile: configPath),
+              let key = config["GuardianKey"] as? String else {
+            fatalError("Config file not found or News Key not specified")
+        }
+        return key
     }
 }

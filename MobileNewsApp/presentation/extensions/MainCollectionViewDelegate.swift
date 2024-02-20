@@ -18,7 +18,6 @@ final class MainCollectionViewDelegate: NSObject, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let model = viewModel.resultNewsArticlesList[indexPath.item]
-        //click
         print("CELL ==>> \(model)")
     }
 }

@@ -14,7 +14,6 @@ class NewYorkTimesRepositoryImpl: NewsRepository {
     func getNewsFromService() async -> MobileNewsDomain {
         let news = await newYorkTimesRemoteService.getNewYorkTimes()
         news.results = Array(news.results.prefix(5))
-        print("New York Times FORMATTED---> \(news.results.count)")
         return news
     }
 }

@@ -14,7 +14,6 @@ class TheGuardianRepositoryImpl: NewsRepository {
     func getNewsFromService() async -> MobileNewsDomain {
         let news = await theGuardianRemoteService.getNews()
         news.response.results = Array(news.response.results.prefix(10))
-        print("News FORMATTED---> \(news.response.results.count)")
         return news
     }
     

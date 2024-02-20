@@ -9,9 +9,10 @@ import Combine
 
 class ViewController: UIViewController {
     
-    let data = ["Title 1", "Title 2", "Title 3", "Title 4", "Title 5"]
 
-    private var dataSource: MainCollectionViewDataSource?
+    private var smallDataSource: MainSmallCollectionViewDataSource?
+    private var newsLargeDataSource: NewsLargeCollectionViewDataSource?
+    private var newYorkTimesLargeDataSource: NewYorkTimesLargeCollectionViewDataSource?
     private var delegate: MainCollectionViewDelegate?
     private var viewModel: ViewModel = ViewModel()
     private var cancellables = Set<AnyCancellable>()
@@ -26,92 +27,104 @@ class ViewController: UIViewController {
     var horizontalCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 16
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 16)
+        layout.minimumInteritemSpacing = 40
+        layout.minimumLineSpacing = 40
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collection.translatesAutoresizingMaskIntoConstraints = false
-        collection.backgroundColor = .brown
         collection.showsHorizontalScrollIndicator = false
         collection.register(SmallCollectionViewCell.self, forCellWithReuseIdentifier: "SmallCollectionViewCell")
         return collection
     }()
     
-    var verticalCollectionView: UICollectionView = {
+    var newsVerticalCollectionView: UICollectionView = {
         let configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
         var layout = UICollectionViewCompositionalLayout.list(using: configuration)
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collection.translatesAutoresizingMaskIntoConstraints = false
-        collection.backgroundColor = .green
-        collection.register(SmallCollectionViewCell.self, forCellWithReuseIdentifier: "SmallCollectionViewCell")
+        collection.register(LargeCollectionViewCell.self, forCellWithReuseIdentifier: "LargeCollectionViewCell")
         return collection
     }()
     
-//    var progressView: UIActivityIndicatorView = {
-//        var progress = UIActivityIndicatorView(style: .large)
-//        progress.translatesAutoresizingMaskIntoConstraints = false
-//        return progress
-//    }()
-//
+    var newYorkTimesVerticalCollectionView: UICollectionView = {
+        let configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+        var layout = UICollectionViewCompositionalLayout.list(using: configuration)
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collection.translatesAutoresizingMaskIntoConstraints = false
+        collection.register(LargeCollectionViewCell.self, forCellWithReuseIdentifier: "LargeCollectionViewCell")
+        return collection
+    }()
+    
+    var progressView: UIActivityIndicatorView = {
+        var progress = UIActivityIndicatorView(style: .large)
+        progress.translatesAutoresizingMaskIntoConstraints = false
+        return progress
+    }()
 
-//    override func loadView() {
-//        self.dataSource = MainTableViewDataSource(dataSource: resultNews)
-//        self.delegate = MainTableViewDelegate(viewModel: viewModel)
-//        tableView.dataSource = dataSource
-//        tableView.delegate = delegate
-//        tableView.register(SmallCell.self, forCellReuseIdentifier: "SmallCell")
-//    }
     
     override func viewDidLoad() {
+        let remainingHeight = (view.frame.height - 200 - 16 * 2) / 2
         view.addSubview(horizontalCollectionView)
-        view.addSubview(verticalCollectionView)
-        //self.dataSource = MainCollectionViewDataSource()
-        self.dataSource = MainCollectionViewDataSource()
-        //self.delegate = MainCollectionViewDelegate(viewModel: viewModel)
-        horizontalCollectionView.dataSource = dataSource
-        //collectionView.delegate = delegate
+        view.addSubview(newsVerticalCollectionView)
+        view.addSubview(newYorkTimesVerticalCollectionView)
+        view.addSubview(progressView)
+
+
+        self.smallDataSource = MainSmallCollectionViewDataSource()
+        self.newsLargeDataSource = NewsLargeCollectionViewDataSource()
+        self.newYorkTimesLargeDataSource = NewYorkTimesLargeCollectionViewDataSource()
+
+        horizontalCollectionView.dataSource = smallDataSource
+        newsVerticalCollectionView.dataSource = newsLargeDataSource
+        newYorkTimesVerticalCollectionView.dataSource = newYorkTimesLargeDataSource
+
         NSLayoutConstraint.activate([
             horizontalCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             horizontalCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             horizontalCollectionView.topAnchor.constraint(equalTo: view.topAnchor),
             horizontalCollectionView.heightAnchor.constraint(equalToConstant: 200),
         ])
-        
-        NSLayoutConstraint.activate([
-            verticalCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            verticalCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            verticalCollectionView.topAnchor.constraint(equalTo: horizontalCollectionView.bottomAnchor, constant: 16),
-            verticalCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
 
+        NSLayoutConstraint.activate([
+            newsVerticalCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            newsVerticalCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            newsVerticalCollectionView.topAnchor.constraint(equalTo: horizontalCollectionView.bottomAnchor, constant: 16),
+            newsVerticalCollectionView.heightAnchor.constraint(equalToConstant: remainingHeight)
         ])
-        
+
+        NSLayoutConstraint.activate([
+            newYorkTimesVerticalCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            newYorkTimesVerticalCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            newYorkTimesVerticalCollectionView.topAnchor.constraint(equalTo: newsVerticalCollectionView.bottomAnchor, constant: 16),
+            newYorkTimesVerticalCollectionView.heightAnchor.constraint(equalToConstant: remainingHeight)
+        ])
        
         
-        //view.addSubview(progressView)
-//        NSLayoutConstraint.activate([
-//           progressView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-//           progressView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-//       ])
+        NSLayoutConstraint.activate([
+           progressView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+           progressView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+       ])
         
-//        viewModel.$isLoading
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] loading in
-//                if loading == true{
-//                    self?.progressView.isHidden = false
-//                    self?.progressView.startAnimating()
-//                } else {
-//                    self?.progressView.isHidden = true
-//                    self?.progressView.stopAnimating()
-//                }
-//            }
-//            .store(in: &cancellables)
+        viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] loading in
+                if loading == true{
+                    self?.progressView.isHidden = false
+                    self?.progressView.startAnimating()
+                } else {
+                    self?.progressView.isHidden = true
+                    self?.progressView.stopAnimating()
+                }
+            }
+            .store(in: &cancellables)
         
         
         Task {
             await viewModel.getAllNews()
         }
         getTheGuardian()
-        //getNewYorkTimes()
-        //getNews()
+        getNewYorkTimes()
+        getNews()
     }
     
     
@@ -119,33 +132,30 @@ class ViewController: UIViewController {
         viewModel.$resultTheGuardianArticlesList
             .receive(on: DispatchQueue.main)
             .sink { [weak self] theGuardian in
-                self?.resultTheGuardian = theGuardian
-                self?.dataSource?.updateDataSource(data: theGuardian)
+                self?.smallDataSource?.updateDataSource(data: theGuardian)
                 self?.horizontalCollectionView.reloadData()
-                //print("FROM CONTROLLER 1==> \(String(describing: self?.resultTheGuardian.first?.sectionName))")
-                print("FROM CONTROLLER 1==> \(String(describing: theGuardian.count))")
             }
             .store(in: &cancellables)
     }
-//    private func getNewYorkTimes(){
-//        viewModel.$resultNewYorkTimesArticlesList
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] newYorkTimes in
-//                self?.resultNewYorkTimes = newYorkTimes
-//                
-//                print("FROM CONTROLLER 2==> \(String(describing: self?.resultNewYorkTimes.first))")
-//            }
-//            .store(in: &cancellables)
-//    }
-//    private func getNews(){
-//        viewModel.$resultNewsArticlesList
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] news in
-//                self?.resultNews = news
-//                self?.tableView.reloadData()
-//                print("FROM CONTROLLER 3==> \(String(describing: self?.resultNews.first))")
-//            }
-//            .store(in: &cancellables)
-//    }
+    
+    private func getNewYorkTimes(){
+        viewModel.$resultNewYorkTimesArticlesList
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newYorkTimes in
+                self?.newYorkTimesLargeDataSource?.updateDataSource(data: newYorkTimes)
+                self?.newYorkTimesVerticalCollectionView.reloadData()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func getNews(){
+        viewModel.$resultNewsArticlesList
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] news in
+                self?.newsLargeDataSource?.updateDataSource(data: news)
+                self?.newsVerticalCollectionView.reloadData()
+            }
+            .store(in: &cancellables)
+    }
 
 }

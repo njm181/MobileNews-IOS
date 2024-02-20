@@ -15,7 +15,6 @@ class NewsRepositoryImpl: NewsRepository {
     func getNewsFromService() async -> MobileNewsDomain {
         let news = await newsRemoteService.getNews()
         news.articles = Array(news.articles.prefix(5))
-        print("News FORMATTED---> \(news.articles.count)")
         return news
     }
     

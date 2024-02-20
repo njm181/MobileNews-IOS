@@ -10,7 +10,7 @@ import UIKit
 
 final class MainScreen: UIView {
     
-    private let largeCard = LargeCard()
+    private let largeCard = LargeCollectionViewCell()
     
     override init(frame: CGRect) {
             super.init(frame: frame)
