@@ -8,5 +8,5 @@
 import Foundation
 
 protocol NewsRepository {
-    func getNewsFromService() async -> [Article]
+    func getNewsFromService() async -> MobileNewsDomain
 }
